@@ -8,7 +8,7 @@ def main():
     bot = Bot()
 
     while True:
-        bot.state.run()
+        bot.state.run()  # type: ignore
 
 
 main()

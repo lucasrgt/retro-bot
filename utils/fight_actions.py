@@ -2,6 +2,7 @@ import time
 import pyautogui as pg
 from config import Config
 from text_colors import TextColors
+from utils.map import Map
 
 
 class FightActions:
@@ -11,8 +12,14 @@ class FightActions:
     def exchange_position(self):
         # Move o cursor ao personagem próximo aos monstros
 
+        map = Map()
+
+        current_map = map.verify_current_map()
+
+        [x, y] = current_map.fight.before_fight_exchange_pos.get_coordinates
+
         time.sleep(Config.DELAY_IN_SECONDS)
-        pg.moveTo(1250, 450)
+        pg.moveTo(x + 10, y + 10)
         time.sleep(Config.DELAY_IN_SECONDS)
         pg.click()
         time.sleep(Config.DELAY_IN_SECONDS)
@@ -38,34 +45,33 @@ class FightActions:
             pg.click()
 
     def move_to_mobs_in_battle(self):
-        pg.moveTo(1198, 528)
+        map = Map()
+
+        current_map = map.verify_current_map()
+
+        [x, y] = current_map.fight.cell_next_to_mobs.get_coordinates
+
+        pg.moveTo(x, y)
         time.sleep(Config.DELAY_IN_SECONDS * 2)
         pg.click()
         time.sleep(Config.DELAY_IN_SECONDS)
 
-    def use_spells(self):
+    def use_chosen_spells(self):
+
         # Usa 2 vezes para caso dê falha crítica.
 
         # Vento envenenado
-        pg.press('1')
-        time.sleep(Config.DELAY_IN_SECONDS)
-        pg.click()
-        time.sleep(Config.DELAY_IN_SECONDS * 1.25)
-
-        pg.press('1')
-        time.sleep(Config.DELAY_IN_SECONDS)
-        pg.click()
-        time.sleep(Config.DELAY_IN_SECONDS * 1.25)
+        self.use_spell_with_critical_failure_safety('1')
 
         # Terremoto
-        pg.press('2')
-        time.sleep(Config.DELAY_IN_SECONDS)
-        pg.click()
-        time.sleep(Config.DELAY_IN_SECONDS * 1.25)
+        self.use_spell_with_critical_failure_safety('2')
 
-        pg.press('2')
-        time.sleep(Config.DELAY_IN_SECONDS)
-        pg.click()
+    def use_spell_with_critical_failure_safety(self, shortcut: str):
+        for _ in range(2):
+            pg.press(shortcut)
+            time.sleep(Config.DELAY_IN_SECONDS)
+            pg.click()
+            time.sleep(Config.DELAY_IN_SECONDS * 1.25)
 
     def pass_turn(self):
         passPos = pg.locateOnScreen(
@@ -117,7 +123,10 @@ class FightActions:
 
         while not fight_finished:
             try:
-                time.sleep(Config.DELAY_IN_SECONDS * 5)
+                time.sleep(Config.DELAY_IN_SECONDS * 2)
+                pg.move(50, 0)
+                pg.move(-50, -0)
+                time.sleep(1)
                 pg.click()
                 if self.verify_finished_fight():
                     return True

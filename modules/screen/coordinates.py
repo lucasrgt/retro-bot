@@ -10,3 +10,7 @@ class Coordinates:
     @x.setter
     def x(self, value: int):
         self._x = value
+
+    @property
+    def get_coordinates(self):
+        return [self._x, self._y]

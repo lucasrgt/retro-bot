@@ -1,17 +1,23 @@
 from states.interface.state import State
 from utils.game_checker import GameChecker
 from utils.player import Player
-import pyautogui as pyautogui
+from states.interface.tbot import TBot
+from modules.screen.coordinates import Coordinates
 import time
+from states.interface.state import State
+from states.interface.tbot import TBot
+from utils.player import Player
+from utils.map import Map
+import pyautogui as pyautogui
 
 
 class VerifyingMapState(State):
 
-    def __init__(self, context):
+    def __init__(self, context: TBot):
         self.context = context
         self.mob_found_pos = None
 
-    def find_mob(self, sample_direction):
+    def find_mob(self, sample_direction: str):
         img_path = f'./img/mobs/mob_sample_{sample_direction.lower()}.png'
 
         mob_pos = pyautogui.locateOnScreen(
@@ -25,17 +31,16 @@ class VerifyingMapState(State):
         print(f'[WARN] Mob pointing to {sample_direction} not found.')
 
     def scan_mobs(self):
-        while not self.mob_found_pos:
 
-            for direction in ['TOP', 'RIGHT', 'BOTTOM', 'LEFT']:
+        for direction in ['TOP', 'RIGHT', 'BOTTOM', 'LEFT']:
 
-                self.mob_found_pos = self.find_mob(
-                    sample_direction=direction)
+            self.mob_found_pos = self.find_mob(
+                sample_direction=direction)
 
-                if self.mob_found_pos:
-                    return self.mob_found_pos
+            if self.mob_found_pos:
+                return self.mob_found_pos
 
-                time.sleep(1)
+            time.sleep(1)
 
         return self.mob_found_pos
 
@@ -43,19 +48,40 @@ class VerifyingMapState(State):
         # Instantiate player, game checker, and window detector
         player = Player()
         game_checker = GameChecker()
+        map = Map()
 
-        while True:
-            mob_found_pos = self.scan_mobs()
+        current_map = map.verify_current_map()
 
-            if mob_found_pos:
-                print('Attacking mob')
+        mob_found_pos = self.scan_mobs()
 
-                player.attack_mob(pos=mob_found_pos)
+        if mob_found_pos:
 
-                if game_checker.verify_if_is_fighting:
-                    self.set_fighting_state()
+            print('Attacking mob')
+
+            player.attack_mob(pos=Coordinates(
+                mob_found_pos[0] + 5, mob_found_pos[1] + 5))
+
+            # if game_checker.verify_if_is_fighting():
+            if game_checker.verify_if_is_fighting():
+
+                self.change_state()
+
+        else:
+            print('[WARN] No mob found. Going to the next map.')
+
+            [x, y] = current_map.exit_to_next_map_pos.get_coordinates  # type: ignore
+
+            pyautogui.moveTo(x, y)
+            pyautogui.click()
+            self.mob_found_pos = None
+            time.sleep(10)
+
+            # TP all ip characters to the map.
+            pyautogui.moveTo(953, 971)
+            pyautogui.click()
             return
 
-    def set_fighting_state(self):
+    def change_state(self):
         self.mob_found_pos = None
-        self.context.set_state(self.context.fighting_state)
+        self.context.set_state(
+            self.context.fighting_state)  # type: ignore

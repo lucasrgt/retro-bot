@@ -3,44 +3,53 @@ from modules.fight.fight_entity import FightEntity
 
 
 class MapEntity:
-    def __init__(self, map_identifier_image_path: str, map_coordinates: Coordinates, exit_to_next_map: Coordinates, exit_to_previous_map: Coordinates, fight: FightEntity):
-        self._map_identifier_image_path = map_identifier_image_path
-        self._map_coordinates = map_coordinates
-        self._exit_to_next_map = exit_to_next_map
-        self._exit_to_previous_map = exit_to_previous_map
+    def __init__(self, name: str, identifier_image_path: str, coordinates: Coordinates, exit_to_next_map_pos: Coordinates, exit_to_previous_map_pos: Coordinates, fight: FightEntity):
+        self._name = name
+        self._identifier_image_path = identifier_image_path
+        self._coordinates = coordinates
+        self._exit_to_next_map_pos = exit_to_next_map_pos
+        self._exit_to_previous_map_pos = exit_to_previous_map_pos
         self._fight = fight
 
     @property
-    def map_identifier_image_path(self):
-        return self._map_identifier_image_path
+    def name(self):
+        return self._name
 
-    @map_identifier_image_path.setter
-    def map_identifier_image_path(self, value: str):
-        self._map_identifier_image_path = value
-
-    @property
-    def map_coordinates(self):
-        return self._map_coordinates
-
-    @map_coordinates.setter
-    def map_coordinates(self, value: Coordinates):
-        self._map_coordinates = value
+    @name.setter
+    def name(self, value: str):
+        self._name = value
 
     @property
-    def exit_to_next_map(self):
-        return self._exit_to_next_map
+    def identifier_image_path(self):
+        return self._identifier_image_path
 
-    @exit_to_next_map.setter
-    def exit_to_next_map(self, value: Coordinates):
-        self._exit_to_next_map = value
+    @identifier_image_path.setter
+    def identifier_image_path(self, value: str):
+        self._identifier_image_path = value
 
     @property
-    def exit_to_previous_map(self):
-        return self._exit_to_previous_map
+    def coordinates(self):
+        return self._coordinates
 
-    @exit_to_previous_map.setter
-    def exit_to_previous_map(self, value: Coordinates):
-        self._exit_to_previous_map = value
+    @coordinates.setter
+    def coordinates(self, value: Coordinates):
+        self._coordinates = value
+
+    @property
+    def exit_to_next_map_pos(self):
+        return self._exit_to_next_map_pos
+
+    @exit_to_next_map_pos.setter
+    def exit_to_next_map_pos(self, value: Coordinates):
+        self._exit_to_next_map_pos = value
+
+    @property
+    def exit_to_previous_map_pos(self):
+        return self._exit_to_previous_map_pos
+
+    @exit_to_previous_map_pos.setter
+    def exit_to_previous_map_pos(self, value: Coordinates):
+        self._exit_to_previous_map_pos = value
 
     @property
     def fight(self):

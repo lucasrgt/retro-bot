@@ -7,7 +7,7 @@ import time
 from states.interface.state import State
 from states.interface.tbot import TBot
 from utils.player import Player
-from utils.map import Map
+from utils.map import MapChecker
 import pyautogui as pyautogui
 
 
@@ -48,9 +48,9 @@ class VerifyingMapState(State):
         # Instantiate player, game checker, and window detector
         player = Player()
         game_checker = GameChecker()
-        map = Map()
+        map_checker = MapChecker()
 
-        current_map = map.verify_current_map()
+        current_map = map_checker.verify_current_map()
 
         mob_found_pos = self.scan_mobs()
 

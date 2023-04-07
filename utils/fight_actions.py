@@ -1,22 +1,18 @@
 import time
 import pyautogui as pg
 from config import Config
+from modules.map.map_entity import MapEntity
 from text_colors import TextColors
-from utils.map import Map
 
 
 class FightActions:
     def __init__(self):
         pass
 
-    def exchange_position(self):
+    def exchange_position(self, map: MapEntity):
         # Move o cursor ao personagem próximo aos monstros
 
-        map = Map()
-
-        current_map = map.verify_current_map()
-
-        [x, y] = current_map.fight.before_fight_exchange_pos.get_coordinates
+        [x, y] = map.fight.before_fight_exchange_pos.get_coordinates
 
         time.sleep(Config.DELAY_IN_SECONDS)
         pg.moveTo(x + 10, y + 10)
@@ -44,20 +40,21 @@ class FightActions:
             pg.moveTo(readyPos[0] + 25, readyPos[1] + 25)
             pg.click()
 
-    def move_to_mobs_in_battle(self):
-        map = Map()
+    def move_to_mobs_in_battle(self, map: MapEntity):
 
-        current_map = map.verify_current_map()
-
-        [x, y] = current_map.fight.cell_next_to_mobs.get_coordinates
+        [x, y] = map.fight.cell_next_to_mobs.get_coordinates
 
         pg.moveTo(x, y)
         time.sleep(Config.DELAY_IN_SECONDS * 2)
         pg.click()
         time.sleep(Config.DELAY_IN_SECONDS)
 
-    def use_chosen_spells(self):
+    def use_chosen_spells(self, map: MapEntity):
 
+        [x, y] = map.fight.cell_next_to_mobs.get_coordinates
+
+        pg.moveTo(x, y)
+        time.sleep(0.5)
         # Usa 2 vezes para caso dê falha crítica.
 
         # Vento envenenado
@@ -120,16 +117,42 @@ class FightActions:
 
         if pass_pos:
             pg.moveTo(pass_pos[0] + 25, pass_pos[1] + 25)
+            time.sleep(0.75)
+            pg.click()
 
         while not fight_finished:
             try:
-                time.sleep(Config.DELAY_IN_SECONDS * 2)
+                self.preventive_use_spells()
+                time.sleep(Config.DELAY_IN_SECONDS * 3)
+                if pass_pos:
+                    pg.moveTo(pass_pos[0] + 25, pass_pos[1] + 25)
                 pg.move(50, 0)
                 pg.move(-50, -0)
                 time.sleep(1)
                 pg.click()
+
                 if self.verify_finished_fight():
                     return True
 
             except:
                 print('Ainda estou passando...')
+
+    def preventive_use_spells(self):
+        sad_creature = pg.locateOnScreen(
+            '././img/game_structure/sad_creature.png', confidence=0.85)
+
+        if sad_creature:
+            pg.moveTo(sad_creature[0] + 25, sad_creature[1] + 25)
+            time.sleep(1)
+            # Vento envenenado
+            self.use_spell_without_critical_failure_safety('1')
+
+            # Terremoto
+            self.use_spell_without_critical_failure_safety('2')
+        else:
+            return
+
+    def use_spell_without_critical_failure_safety(self, shortcut: str):
+        pg.press(shortcut)
+        time.sleep(Config.DELAY_IN_SECONDS)
+        pg.click()

@@ -3,32 +3,30 @@ from text_colors import TextColors
 from modules.map.map_list import map_list
 
 
-class Map():
-
-    current_map = None
-
+class MapChecker():
     def verify_current_map(self):
 
         print(f"{TextColors.WARNING}[WARN] Verifying current map...")
 
         current_map = None
 
-        for map in map_list:
+        while current_map == None:
 
-            current_map_pos = pg.locateOnScreen(
-                map.identifier_image_path, confidence=0.9)
+            try:
+                for map in map_list:
 
-            if current_map_pos:
+                    current_map_pos = pg.locateOnScreen(
+                        map.identifier_image_path, confidence=0.9)
 
-                current_map = map
+                    if current_map_pos:
 
-                print(
-                    f"{TextColors.OKGREEN}[OK] Found map: {map.coordinates.get_coordinates} | Map name: {map.name} | Cells next to mob: {map.fight.cell_next_to_mobs.get_coordinates}")
+                        current_map = map
 
-                break
+                        print(
+                            f"{TextColors.OKGREEN}[OK] Found map: {map.coordinates.get_coordinates} | MapChecker name: {map.name} | Cells next to mob: {map.fight.cell_next_to_mobs.get_coordinates}")
 
-        if current_map is None:
-
-            print(f"{TextColors.FAIL}[ERROR] Could not find any map.")
+                        break
+            except:
+                print('[ERROR] Map not found. Verifying again.')
 
         return current_map

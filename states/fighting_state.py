@@ -3,6 +3,7 @@ from states.interface.state import State
 from states.interface.tbot import TBot
 from utils.fight_actions import FightActions
 from utils.player import Player
+from utils.map import MapChecker
 
 
 class FightingState(State):
@@ -14,16 +15,18 @@ class FightingState(State):
     def run(self):
         fight = FightActions()
         player = Player()
+        mapChecker = MapChecker()
+        map = mapChecker.verify_current_map()
 
         print('[STATE] FightingState triggered.')
 
-        fight.exchange_position()
+        fight.exchange_position(map)
         time.sleep(1)
         fight.press_ready()
         time.sleep(2)
-        fight.move_to_mobs_in_battle()
+        fight.move_to_mobs_in_battle(map)
         time.sleep(2)
-        fight.use_chosen_spells()
+        fight.use_chosen_spells(map)
         time.sleep(1)
         fight.loop_pass()
         time.sleep(1)

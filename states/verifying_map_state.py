@@ -74,7 +74,8 @@ class VerifyingMapState(State):
             pyautogui.moveTo(x, y)
             pyautogui.click()
             self.mob_found_pos = None
-            time.sleep(10)
+            print('Esperando 30 segundos para os mobs nascerem.')
+            time.sleep(30)
 
             # TP all ip characters to the map.
             pyautogui.moveTo(953, 971)
